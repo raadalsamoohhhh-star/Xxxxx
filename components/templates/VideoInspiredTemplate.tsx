@@ -14,6 +14,7 @@ type Props = {
   eventTime?: string;
   mapUrl?: string;
   musicUrl?: string;
+  videoUrl?: string;
   rsvpEnabled?: boolean;
   gallery?: string[];
   sections?: { story:boolean; schedule:boolean; gallery:boolean; venue:boolean; rsvp:boolean; wishes:boolean };
@@ -59,7 +60,7 @@ const presets: Record<string, any> = {
   },
 };
 
-export default function VideoInspiredTemplate({ variant, groom, bride, date, venue, invitationText, heroImage, eventDate, eventTime = "20:00", mapUrl, musicUrl, rsvpEnabled = true, gallery = [], sections, sectionOrder = ["story","schedule","gallery","venue","rsvp","wishes"] }: Props) {
+export default function VideoInspiredTemplate({ variant, groom, bride, date, venue, invitationText, heroImage, eventDate, eventTime = "20:00", mapUrl, musicUrl, videoUrl, rsvpEnabled = true, gallery = [], sections, sectionOrder = ["story","schedule","gallery","venue","rsvp","wishes"] }: Props) {
   const p = presets[variant] ?? presets["garden-royal"];
   const [open, setOpen] = useState(false);
   const [rsvp, setRsvp] = useState<string | null>(null);
@@ -106,6 +107,8 @@ export default function VideoInspiredTemplate({ variant, groom, bride, date, ven
           <p>{date}</p>
         </div>
       </section>
+
+      {videoUrl && <div className="px-5 py-5"><video src={videoUrl} controls playsInline preload="metadata" poster={heroImage || undefined} className="w-full max-h-[560px] object-cover rounded-[24px]" /></div>}
 
       {sectionOrder.filter(key => sections?.[key as keyof typeof sections] !== false).map(key => {
         if (key === "story") return <section className="story-card" key={key}><span className="eyebrow">بكل حب</span><h2>{invitationText || "يسعدنا أن نشارككم أجمل لحظاتنا"}</h2><div className="ornament">❦</div><p>نتشرف بحضوركم ومشاركتكم فرحتنا في هذا اليوم المميز.</p></section>;
