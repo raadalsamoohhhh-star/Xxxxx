@@ -2,13 +2,13 @@ import {NextResponse} from 'next/server';
 import {db,StoredInvitation} from '@/lib/server-db';
 import {defaultInvitation,InvitationData} from '@/lib/invitation';
 import {getCurrentUser} from '@/lib/auth';
-import {slug as normalizeSlug,text} from '@/lib/validation';
+import {slug as normalizeSlug,text,url} from '@/lib/validation';
 
 function publicView(inv:StoredInvitation){const {ownerId,...safe}=inv;return safe;}
 function sanitize(body:Partial<InvitationData>):Partial<InvitationData>{
   const allowed=['templateId','slug','groom','bride','date','time','venue','address','invitationText','heroImage','gallery','mapUrl','musicUrl','rsvpEnabled','saveTheDateEnabled','saveTheDateTitle','saveTheDateText','languages','defaultLanguage','monogram','customCoverIllustration','videoUrl','domain','design','sectionOrder','sections'] as const;
   const out:Record<string,unknown>={};for(const k of allowed)if(k in body)out[k]=body[k];
-  out.groom=text(out.groom,100);out.bride=text(out.bride,100);out.venue=text(out.venue,200);out.address=text(out.address,300);out.invitationText=text(out.invitationText,2000);out.saveTheDateTitle=text(out.saveTheDateTitle,120);out.saveTheDateText=text(out.saveTheDateText,1000);out.monogram=text(out.monogram,40);out.gallery=Array.isArray(out.gallery)?out.gallery.slice(0,30).map(x=>text(x,1200)).filter(Boolean):[];return out as Partial<InvitationData>;
+  out.groom=text(out.groom,100);out.bride=text(out.bride,100);out.venue=text(out.venue,200);out.address=text(out.address,300);out.invitationText=text(out.invitationText,2000);out.saveTheDateTitle=text(out.saveTheDateTitle,120);out.saveTheDateText=text(out.saveTheDateText,1000);out.monogram=text(out.monogram,40);out.heroImage=url(out.heroImage,1200);out.mapUrl=url(out.mapUrl,1200);out.musicUrl=url(out.musicUrl,1200);out.videoUrl=url(out.videoUrl,1200);out.customCoverIllustration=url(out.customCoverIllustration,1200);out.domain=text(out.domain,255);out.gallery=Array.isArray(out.gallery)?out.gallery.slice(0,30).map(x=>url(x,1200)).filter(Boolean):[];return out as Partial<InvitationData>;
 }
 export async function GET(req:Request){
   const params=new URL(req.url).searchParams; const slug=normalizeSlug(params.get('slug')); const mine=params.get('mine')==='1'; const all=await db.invitations();
