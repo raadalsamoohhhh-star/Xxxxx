@@ -1,4 +1,5 @@
 name: Dawati CI
+# Full verification: dependency audit, typecheck, tests, production build
 
 on:
   push:
