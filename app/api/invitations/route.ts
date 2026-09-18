@@ -2,7 +2,9 @@ import {NextResponse} from 'next/server';
 import {db,StoredInvitation} from '@/lib/server-db';
 import {defaultInvitation,InvitationData} from '@/lib/invitation';
 import {getCurrentUser} from '@/lib/auth';
-import {slug as normalizeSlug,text,url} from '@/lib/validation';
+import {slug as normalizeSlug,text,url,positiveInt} from '@/lib/validation';
+import {getTemplate} from '@/lib/template-registry';
+import type {SectionKey,FontKey,RadiusKey} from '@/lib/invitation';
 
 function publicView(inv:StoredInvitation){const {ownerId,...safe}=inv;return safe;}
 function sanitize(body:Partial<InvitationData>):Partial<InvitationData>{
@@ -19,7 +21,7 @@ export async function GET(req:Request){
 }
 export async function POST(req:Request){
   const u=await getCurrentUser();if(!u)return NextResponse.json({error:'سجل الدخول أولاً.'},{status:401});
-  const body=await req.json().catch(()=>({})) as Partial<InvitationData>;const clean=sanitize(body);const slug=normalizeSlug(clean.slug);if(!slug)return NextResponse.json({error:'الرابط المختصر يجب أن يحتوي أحرفًا إنجليزية أو أرقامًا.'},{status:400});
+  const body=await req.json().catch(()=>({})) as Partial<InvitationData>;const clean=sanitize(body);const slug=normalizeSlug(clean.slug);const template=getTemplate(String(clean.templateId||''));if(!template||!template.active)return NextResponse.json({error:'القالب غير متاح.'},{status:400});if(!slug)return NextResponse.json({error:'الرابط المختصر يجب أن يحتوي أحرفًا إنجليزية أو أرقامًا.'},{status:400});
   const all=await db.invitations();const old=all[slug];if(old&&old.ownerId!==u.id)return NextResponse.json({error:'الرابط المختصر مستخدم.'},{status:409});const now=new Date().toISOString();
   const item:StoredInvitation={...defaultInvitation,...clean,slug,ownerId:u.id,published:true,createdAt:old?.createdAt||now,updatedAt:now};all[slug]=item;await db.saveInvitations(all);return NextResponse.json(item);
 }
