@@ -1,0 +1,21 @@
+{
+  "source": "The Digital Yes Teatro demo",
+  "url": "https://www.thedigitalyes.com/ar/demo/teatro",
+  "features_added": [
+    "single shareable link",
+    "RSVP",
+    "venue name/address/map",
+    "Save the Date",
+    "optional video/music",
+    "multi-language-ready fields",
+    "custom monogram",
+    "section-ready editor",
+    "private-dashboard-ready structure",
+    "original Teatro-inspired opening"
+  ],
+  "not_copied": [
+    "exact artwork",
+    "source branding",
+    "source pricing"
+  ]
+}
