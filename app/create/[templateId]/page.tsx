@@ -27,7 +27,7 @@ export default function CreatePage(){
  const update=(key:keyof InvitationData,value:any)=>{setSaved(false);setData(d=>({...d,[key]:value}))};
  const updateDesign=(key:keyof InvitationData["design"],value:any)=>{setSaved(false);setData(d=>({...d,design:{...d.design,[key]:value}}));};
  const toggle=(key:SectionKey)=>{setSaved(false);setData(d=>({...d,sections:{...d.sections,[key]:!d.sections[key]}}));};
- const move=(from:SectionKey,to:SectionKey)=>{const order=[...data.sectionOrder];const a=order.indexOf(from),b=order.indexOf(to);if(a<0||b<0)return;order.splice(a,1);order.splice(b,0,from);setSaved(false);setData(d=>({...d,sectionOrder:order}));};
+ const move=(from:SectionKey,to:SectionKey)=>{setSaved(false);setData(d=>{const order=[...d.sectionOrder];const a=order.indexOf(from),b=order.indexOf(to);if(a<0||b<0)return d;order.splice(a,1);order.splice(b,0,from);return {...d,sectionOrder:order};});};
  const save=async()=>{const slug=data.slug.trim().toLowerCase().replace(/\s+/g,"-");const next={...data,slug:slug||"دعوة"};const r=await fetch("/api/invitations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(next)});if(r.status===401){router.push(`/login?next=/create/${template.id}`);return}const x=await r.json();if(!r.ok){alert(x.error||"تعذر الحفظ");return}setData(x);setSaved(true)};
  const formatted=useMemo(()=>data.date?new Intl.DateTimeFormat("ar-JO",{dateStyle:"long",timeStyle:"short"}).format(new Date(`${data.date}T${data.time||"20:00"}`)):"",[data.date,data.time]);
 
