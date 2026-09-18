@@ -6,13 +6,14 @@ import VideoInspiredTemplate from "@/components/templates/VideoInspiredTemplate"
 import TeatroInspiredTemplate from "@/components/templates/TeatroInspiredTemplate";
 import InvitationTheme from "@/components/InvitationTheme";
 import { InvitationData } from "@/lib/invitation";
+import type { Template } from "@/lib/templates";
 
 
 export default function InvitationPage() {
   const [data, setData] = useState<InvitationData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const [template, setTemplate] = useState<any>(null);
+  const [template, setTemplate] = useState<Template | null>(null);
 
   useEffect(() => {
     const slug = window.location.pathname.split("/").filter(Boolean).pop() || "";
@@ -23,7 +24,7 @@ export default function InvitationPage() {
       .finally(()=>setLoading(false));
   }, []);
 
-  useEffect(()=>{ if(!data) return; fetch('/api/templates').then(r=>r.ok?r.json():[]).then(list=>{ const found=Array.isArray(list)?list.find((x:any)=>x.id===data.templateId):null; setTemplate(found||null); }).catch(()=>setTemplate(null)); },[data]);
+  useEffect(()=>{ if(!data) return; fetch('/api/templates').then(r=>r.ok?r.json():[]).then(list=>{ const found=Array.isArray(list)?(list as Template[]).find(x=>x.id===data.templateId):null; setTemplate(found||null); }).catch(()=>setTemplate(null)); },[data]);
 
   if (loading) return <main className="min-h-screen grid place-items-center">جارٍ تحميل الدعوة…</main>;
   if (notFound || !data) return <main className="min-h-screen grid place-items-center p-6 text-center"><div><h1 className="serif text-4xl">الدعوة غير موجودة</h1><p className="mt-3 text-[#756f68]">تأكد من الرابط أو أنشئ دعوة جديدة.</p><Link href="/templates" className="btn btn-primary mt-6">استعراض القوالب</Link></div></main>;
