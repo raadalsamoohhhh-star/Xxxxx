@@ -21,10 +21,6 @@ export default function InvitationPage() {
       .then(found=>{ if(found) setData(found); else setNotFound(true); })
       .catch(()=>setNotFound(true))
       .finally(()=>setLoading(false));
-    fetch('/api/templates').then(r=>r.ok?r.json():[]).then(list=>{
-      const found=Array.isArray(list)?list.find((x:any)=>x.id===data?.templateId):null;
-      if(found) setTemplate(found);
-    }).catch(()=>{});
   }, []);
 
   useEffect(()=>{ if(!data) return; fetch('/api/templates').then(r=>r.ok?r.json():[]).then(list=>{ const found=Array.isArray(list)?list.find((x:any)=>x.id===data.templateId):null; setTemplate(found||null); }).catch(()=>setTemplate(null)); },[data]);
