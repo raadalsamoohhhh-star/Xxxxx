@@ -20,7 +20,8 @@ export default function CreatePage(){
  const [templateLoading,setTemplateLoading]=useState(true);
  const fallback=templates.find(t=>t.id===params.templateId)??templates[0];
  const [data,setData]=useState<InvitationData>({...defaultInvitation,templateId:params.templateId,sections:{...defaultInvitation.sections},sectionOrder:defaultInvitation.sectionOrder});
- const supported=template?.supportedSections ?? fallback.supportedSections ?? ["story","schedule","gallery","venue","rsvp","wishes"];\n const visibleSectionOrder=data.sectionOrder.filter(key=>supported.includes(key));
+ const supported=template?.supportedSections ?? fallback.supportedSections ?? ["story","schedule","gallery","venue","rsvp","wishes"];
+ const visibleSectionOrder=data.sectionOrder.filter(key=>supported.includes(key));
  const [tab,setTab]=useState<"content"|"design"|"sections">("content"); const [saved,setSaved]=useState(false); const [dragging,setDragging]=useState<SectionKey|null>(null);
  useEffect(()=>{ fetch(`/api/templates`).then(r=>r.json()).then(list=>{const found=Array.isArray(list)?list.find((x:any)=>x.id===params.templateId):null; if(found){setTemplate(found);setData(d=>({...d,templateId:found.id,sectionOrder:d.sectionOrder.filter(k=>found.supportedSections.includes(k))}));} else {setTemplate(null);} }).finally(()=>setTemplateLoading(false)); },[params.templateId]);
  useEffect(()=>{const slug=new URLSearchParams(window.location.search).get("slug"); if(!slug)return; fetch(`/api/invitations?slug=${encodeURIComponent(slug)}&mine=1`).then(r=>r.ok?r.json():null).then(x=>x?.ownerId&&setData(x)).catch(()=>{});},[]);
